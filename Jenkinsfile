@@ -31,7 +31,7 @@ pipeline {
         stage('publish') {
             steps {
                 dir(WORKSPACE) {
-                    sh './gradlew clean publish'
+                    sh './gradlew publish'
                 }
             }
         }
