@@ -36,7 +36,8 @@ pipeline {
 
         stage('Bump the build version and tag the repo') {
             steps {
-                sh '''
+                withCredentials([sshUserPrivateKey(credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a', keyFileVariable: 'private_key', passphraseVariable: '', usernameVariable: env.JENKINS_GITHUB_USER)]) {
+                    sh '''
                   #!/bin/bash +x
                   virtualenv .venv
                   . .venv/bin/activate
@@ -44,6 +45,7 @@ pipeline {
                   git fetch --tags
                   semvertag bump --tag
                 '''
+                }
             }
         }
     }
