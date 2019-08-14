@@ -42,6 +42,9 @@ pipeline {
                   virtualenv .venv
                   . .venv/bin/activate
                   pip install git+https://github.com/ministryofjustice/semvertag.git@1.1.0
+                  eval $(ssh-agent)
+                  ssh-add ${private_key}
+                  ssh-add -l
                   git fetch --tags
                   semvertag bump --tag
                 '''
