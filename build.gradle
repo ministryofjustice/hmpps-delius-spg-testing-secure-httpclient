@@ -1,0 +1,103 @@
+import com.amazonaws.auth.BasicSessionCredentials
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.amazonaws:aws-java-sdk-sts:1.11.594'
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'project-report'
+    id 'net.thauvin.erik.gradle.semver' version '0.9.9-beta'
+    id 'maven-publish'
+    id 'idea'
+}
+
+ext {
+    String accessKey = System.getProperty("AWS_ACCESS_KEY_ID") ?: System.getenv("AWS_ACCESS_KEY_ID")
+    String secretKey = System.getProperty("AWS_SECRET_ACCESS_KEY") ?: System.getenv("AWS_SECRET_ACCESS_KEY")
+    String sessionToken = System.getProperty("AWS_SESSION_TOKEN") ?: System.getenv("AWS_SESSION_TOKEN")
+
+    awsCredentials = (!accessKey || !secretKey || !sessionToken) ? null : new BasicSessionCredentials(accessKey, secretKey, sessionToken)
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "s3://${repoBucketName}/releases"
+        if (rootProject.ext.awsCredentials) {
+            credentials(AwsCredentials) {
+                accessKey = awsCredentials.AWSAccessKeyId
+                secretKey = awsCredentials.AWSSecretKey
+                sessionToken = awsCredentials.sessionToken
+            }
+        } else {
+            authentication {
+                awsIm(AwsImAuthentication) // load from EC2 role or env var
+            }
+        }
+    }
+}
+
+apply from: 'dependencies.gradle'
+
+group = 'spg-testing'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+wrapper {
+    gradleVersion = '5.5.1'
+}
+
+test {
+    include '**/*Test*'
+
+    beforeTest { descriptor ->
+        logger.lifecycle("Running test: " + descriptor)
+    }
+    onOutput { descriptor, event ->
+        logger.lifecycle("Test: " + descriptor + ":" + event.message)
+    }
+}
+
+publishing {
+    publications {
+        println "Version: $version"
+
+        mavenJava(MavenPublication) {
+            artifactId = 'spg-httpclient'
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            if (rootProject.ext.awsCredentials) {
+                credentials(AwsCredentials) {
+                    accessKey = awsCredentials.AWSAccessKeyId
+                    secretKey = awsCredentials.AWSSecretKey
+                    sessionToken = awsCredentials.sessionToken
+                }
+            } else {
+                authentication {
+                    awsIm(AwsImAuthentication) // load from EC2 role or env var
+                }
+            }
+            if (project.version.endsWith('-SNAPSHOT')) {
+                url "s3://${repoBucketName}/snapshots/"
+            } else {
+                url "s3://${repoBucketName}/releases/"
+            }
+        }
+    }
+}
+
+publishToMavenLocal {
+//    dependsOn(incrementPatch)
+}
