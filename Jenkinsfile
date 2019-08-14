@@ -34,20 +34,16 @@ pipeline {
             }
         }
 
-        stage('Install SemverTag') {
+        stage('Bump the build version and tag the repo') {
             steps {
                 sh '''
                   #!/bin/bash +x
                   virtualenv .venv
                   . .venv/bin/activate
                   pip install git+https://github.com/ministryofjustice/semvertag.git@1.1.0
+                  git fetch --tags
+                  semvertag bump --tag
                 '''
-            }
-        }
-
-        stage('Bump the build version') {
-            steps {
-                sh 'semvertag bump --tag'
             }
         }
     }
