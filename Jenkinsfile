@@ -26,7 +26,7 @@ pipeline {
             }
             post {
                 always {
-                    junit '**/build/*.xml'
+                    junit 'build/test-results/**/*.xml'
                 }
                 failure {
                     sh '''echo The Pipeline failed!'''
