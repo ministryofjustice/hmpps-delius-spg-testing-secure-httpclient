@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages {
-        stage ('Initialize') {
+        stage('Initialize') {
             steps {
                 sh '''
                     echo "PATH = ${PATH}"
@@ -18,21 +18,37 @@ pipeline {
             }
         }
 
-
-        stage('clean build') {
+        stage('Clean Build') {
             steps {
                 dir(WORKSPACE) {
                     sh './gradlew clean build'
                 }
             }
+            post {
+                always {
+                    junit '**/build/*.xml'
+                }
+                failure {
+                    sh '''echo The Pipeline failed!'''
+                }
+            }
         }
 
-
-        stage('publish') {
+        stage('Decide whether to publish') {
             steps {
-                dir(WORKSPACE) {
-                    sh './gradlew publish'
+                script {
+                    env.PUBLISH_ARTIFACT = input message: 'User input required', ok: 'Publish',
+                            parameters: [choice(name: 'PUBLISH ARTIFACT', choices: 'No\nYes', description: 'Choose "Yes" if you want to publish this build')]
                 }
+            }
+        }
+
+        stage('Publish Artifact') {
+            when {
+                environment name: 'PUBLISH_ARTIFACT', value: 'Yes'
+            }
+            steps {
+                echo "User response = ${env.PUBLISH_ARTIFACT}"
             }
         }
     }
