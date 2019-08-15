@@ -35,6 +35,9 @@ pipeline {
         }
 
         stage('Bump the build version and tag the Repository') {
+            when {
+                branch "master"
+            }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a', keyFileVariable: 'private_key', passphraseVariable: '', usernameVariable: env.JENKINS_GITHUB_USER)]) {
                     sh '''
