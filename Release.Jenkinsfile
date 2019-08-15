@@ -19,6 +19,11 @@ pipeline {
     }
 
     stages {
+        stage ('Notify build started') {
+            steps {
+                slackSend(message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)")
+            }
+        }
 
         stage('Initialize') {
             steps {
@@ -30,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('Bump the build version and tag the Repository') {
+        stage('Bump Version') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a', keyFileVariable: 'private_key', passphraseVariable: '', usernameVariable: env.JENKINS_GITHUB_USER)]) {
                     sh '''
@@ -70,6 +75,15 @@ pipeline {
                 dir(WORKSPACE) {
                     sh './gradlew publish'
                 }
+            }
+        }
+
+        post {
+            success {
+                slackSend(message: "Build successful -${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'good')
+            }
+            failure {
+                slackSend(message: "Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'danger')
             }
         }
     }
