@@ -23,7 +23,6 @@ pipeline {
             steps {
                 sh '''
                     echo "Bump_Version = ${Bump_Version}"
-                    echo "Params Bump_Version = ${params.Bump_Version}"
                     echo "Parameters Bump_Version = ${parameters.Bump_Version}"
                 '''
             }
