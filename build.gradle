@@ -68,7 +68,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = 'spg-testing'
             artifactId = 'spg-httpclient'
-            version = rootProject.file('VERSION').text.trim()
+            version = rootProject.file('VERSION').exists() ? rootProject.file('VERSION').text.trim() : '0.0.0'
 
             from components.java
         }
