@@ -14,7 +14,7 @@ pipeline {
     parameters {
         choice(
             name: 'Bump_Version',
-            choices:"major\nminor\npatch\nbuild",
+            choices:"build\npatch\nminor\nmajor",
             description: "Please select which part of the version to bump" )
     }
 
