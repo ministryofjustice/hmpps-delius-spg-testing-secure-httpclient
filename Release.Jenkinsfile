@@ -49,28 +49,28 @@ pipeline {
             }
         }
 
-//         stage('Clean Build') {
-//             steps {
-//                 dir(WORKSPACE) {
-//                     sh './gradlew clean build'
-//                 }
-//             }
-//             post {
-//                 always {
-//                     junit 'build/test-results/**/*.xml'
-//                 }
-//                 failure {
-//                     sh '''echo The Pipeline failed!'''
-//                 }
-//             }
-//         }
-//
-//         stage('Publish') {
-//             steps {
-//                 dir(WORKSPACE) {
-//                     sh './gradlew publish'
-//                 }
-//             }
-//         }
+        stage('Clean Build') {
+            steps {
+                dir(WORKSPACE) {
+                    sh './gradlew clean build'
+                }
+            }
+            post {
+                always {
+                    junit 'build/test-results/**/*.xml'
+                }
+                failure {
+                    sh '''echo The Pipeline failed!'''
+                }
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                dir(WORKSPACE) {
+                    sh './gradlew publish'
+                }
+            }
+        }
     }
 }
