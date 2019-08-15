@@ -19,19 +19,11 @@ pipeline {
     }
 
     stages {
-        stage('Initialize') {
-            steps {
-                sh '''
-                    echo "Bump_Version = ${Bump_Version}"
-                    echo "Parameters Bump_Version = ${parameters.Bump_Version}"
-                '''
-            }
-        }
 
-    /*
         stage('Initialize') {
             steps {
                 sh '''
+                    echo "Selected Bump_Version = ${Bump_Version}"
                     echo "PATH = ${PATH}"
                     echo "M2_HOME = ${M2_HOME}"
                 '''
@@ -50,13 +42,13 @@ pipeline {
                       ssh-add ${private_key}
                       ssh-add -l
                       git fetch --tags
-                      echo "Selected bump_version = ${params.Bump_Version}"
-                      echo $(semvertag bump "${params.Bump_Version}" --tag) > VERSION
+                      echo $(semvertag bump "${Bump_Version}" --tag) > VERSION
+                      echo "VERSION FILE CONTENT = `cat VERSION`"
                     '''
                 }
             }
         }
-    */
+
 //         stage('Clean Build') {
 //             steps {
 //                 dir(WORKSPACE) {
