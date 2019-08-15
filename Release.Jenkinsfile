@@ -22,6 +22,17 @@ pipeline {
         stage('Initialize') {
             steps {
                 sh '''
+                    echo "Bump_Version = ${Bump_Version}"
+                    echo "Params Bump_Version = ${params.Bump_Version}"
+                    echo "Parameters Bump_Version = ${parameters.Bump_Version}"
+                '''
+            }
+        }
+
+    /*
+        stage('Initialize') {
+            steps {
+                sh '''
                     echo "PATH = ${PATH}"
                     echo "M2_HOME = ${M2_HOME}"
                 '''
@@ -70,5 +81,6 @@ pipeline {
                 }
             }
         }
+    */
     }
 }
