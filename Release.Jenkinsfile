@@ -40,7 +40,8 @@ pipeline {
                       ssh-add ${private_key}
                       ssh-add -l
                       git fetch --tags
-                      echo $(semvertag bump ${params.Bump_Version} --tag) > VERSION
+                      echo "Selected bump_version = ${params.Bump_Version}"
+                      echo $(semvertag bump "${params.Bump_Version}" --tag) > VERSION
                     '''
                 }
             }
