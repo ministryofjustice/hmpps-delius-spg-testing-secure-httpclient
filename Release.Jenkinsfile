@@ -60,6 +60,9 @@ pipeline {
                     sh '''echo The Pipeline failed!'''
                 }
             }
+        }
+
+        stage('Publish') {
             steps {
                 dir(WORKSPACE) {
                     sh './gradlew publish'
