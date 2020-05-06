@@ -8,7 +8,7 @@ https://jenkins.engineering-dev.probation.hmpps.dsd.io/job/DAMS/job/Artefacts/jo
 
 In order to publish, this jenkins job will need to be run
 https://jenkins.engineering-dev.probation.hmpps.dsd.io/job/DAMS/job/Artefacts/job/SPG/job/spg-testing-secure-httpclient-master-RELEASE/ 
-
+This uses the MoJ semver library 
 
 which in turn will publish the jar to this s3 bucket in engineering account:
 https://s3.console.aws.amazon.com/s3/buckets/tf-eu-west-2-hmpps-eng-dev-maven-repo-s3bucket/releases/spg-testing/spg-httpclient/
