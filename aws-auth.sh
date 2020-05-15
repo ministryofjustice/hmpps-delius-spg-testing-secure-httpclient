@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-myuser=`cat ~/.aws/identity|cut -d'=' -f2`
+#create an identity file that contains your userid in the format:
+#user=PaulCrimes
+myuser=`grep user ~/.aws/identity|cut -d'=' -f2`
+
 rolename="developer"
 mfa_arn="arn:aws:iam::570551521311:mfa/$myuser"
 # the developer role in the engineering dev account
