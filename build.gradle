@@ -1,11 +1,6 @@
-import com.amazonaws.auth.BasicSessionCredentials
-
 buildscript {
     repositories {
         mavenCentral()
-    }
-    dependencies {
-        classpath 'com.amazonaws:aws-java-sdk-sts:1.11.594'
     }
 }
 
@@ -16,30 +11,11 @@ plugins {
     id 'idea'
 }
 
-ext {
-    String accessKey = System.getProperty("AWS_ACCESS_KEY_ID") ?: System.getenv("AWS_ACCESS_KEY_ID")
-    String secretKey = System.getProperty("AWS_SECRET_ACCESS_KEY") ?: System.getenv("AWS_SECRET_ACCESS_KEY")
-    String sessionToken = System.getProperty("AWS_SESSION_TOKEN") ?: System.getenv("AWS_SESSION_TOKEN")
-
-    awsCredentials = (!accessKey || !secretKey || !sessionToken) ? null : new BasicSessionCredentials(accessKey, secretKey, sessionToken)
-}
-
 repositories {
     mavenLocal()
     mavenCentral()
     maven {
-        url "s3://${repoBucketName}/releases"
-        if (rootProject.ext.awsCredentials) {
-            credentials(AwsCredentials) {
-                accessKey = awsCredentials.AWSAccessKeyId
-                secretKey = awsCredentials.AWSSecretKey
-                sessionToken = awsCredentials.sessionToken
-            }
-        } else {
-            authentication {
-                awsIm(AwsImAuthentication) // load from EC2 role or env var
-            }
-        }
+        url "https://${artifactsRepoName}/releases"
     }
 }
 
@@ -48,18 +24,11 @@ apply from: 'dependencies.gradle'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-wrapper {
-    gradleVersion = '5.5.1'
-}
-
 test {
-    include '**/*Test*'
-
-    beforeTest { descriptor ->
-        logger.lifecycle("Running test: " + descriptor)
-    }
-    onOutput { descriptor, event ->
-        logger.lifecycle("Test: " + descriptor + ":" + event.message)
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat = 'full'
     }
 }
 
@@ -76,18 +45,14 @@ publishing {
 
     repositories {
         maven {
-            if (rootProject.ext.awsCredentials) {
-                credentials(AwsCredentials) {
-                    accessKey = awsCredentials.AWSAccessKeyId
-                    secretKey = awsCredentials.AWSSecretKey
-                    sessionToken = awsCredentials.sessionToken
-                }
-            } else {
-                authentication {
-                    awsIm(AwsImAuthentication) // load from EC2 role or env var
-                }
+            credentials(HttpHeaderCredentials.class) {
+                name = "Authorization"
+                value = "Bearer ${System.getProperty("GITHUB_ACCESS_TOKEN") ?: System.getenv("GITHUB_ACCESS_TOKEN")}"
             }
-            url = version.endsWith('SNAPSHOT') ? "s3://${repoBucketName}/snapshots/" : "s3://${repoBucketName}/releases/"
+            authentication {
+                register("header", HttpHeaderAuthentication.class)
+            }
+            url = version.endsWith('SNAPSHOT') ? "https://${artifactsRepoName}/snapshots/" : "https://${artifactsRepoName}/releases/"
         }
     }
 }
