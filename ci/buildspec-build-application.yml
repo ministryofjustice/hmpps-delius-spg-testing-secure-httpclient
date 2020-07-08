@@ -1,0 +1,35 @@
+version: 0.2
+
+env:
+  variables:
+    test_results_bucket: 'tf-eu-west-2-hmpps-eng-dev-ci-test-results-s3bucket'
+    project_name: 'hmpps-delius-spg-testing-secure-httpclient'
+    TZ: 'Europe/London'
+    PROJECT_IDENTIFIER: 'hmpps-spg-testing-httpclient'
+phases:
+  install:
+    commands:
+      - ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime
+      - echo ${TZ} > /etc/timezone
+      - apt-get update
+      - apt-get install jq -y
+      - apt-get install awscli -y
+  pre_build:
+    commands:
+      - gradle build --dry-run --configure-on-demand --daemon
+  build:
+    commands:
+      - gradle clean build
+  post_build:
+    commands:
+      - ${CODEBUILD_SRC_DIR}/scripts/archive-application-test-artifacts.sh
+reports:
+  UnitTestReports:
+    files:
+      - '**/*'
+    base-directory: 'build/test-results'
+    file-format: 'JunitXml'
+artifacts:
+  files:
+    - '**/*'
+  name: $Env:PROJECT_IDENTIFIER-$(date +%Y-%m-%d-%H-%m-%S)
