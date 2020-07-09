@@ -14,9 +14,6 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        url "${artifactsRepoDomain}/${artifactsRepoName}/releases"
-    }
 }
 
 apply from: 'dependencies.gradle'
