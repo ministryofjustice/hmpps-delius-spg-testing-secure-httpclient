@@ -1,0 +1,13 @@
+version: 0.2
+
+env:
+  parameter-store:
+    GITHUB_USERNAME: '/jenkins/github/username'
+    GITHUB_ACCESS_TOKEN: '/jenkins/github/accesstoken'
+phases:
+  pre_build:
+    commands:
+      - gradle build --dry-run --configure-on-demand --daemon
+  build:
+    commands:
+      - gradle publish
