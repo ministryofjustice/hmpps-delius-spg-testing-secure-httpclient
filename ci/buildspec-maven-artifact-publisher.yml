@@ -7,6 +7,7 @@ env:
 phases:
   pre_build:
     commands:
+      - ls -alR buid/libs
       - gradle build --dry-run --configure-on-demand --daemon
   build:
     commands:
