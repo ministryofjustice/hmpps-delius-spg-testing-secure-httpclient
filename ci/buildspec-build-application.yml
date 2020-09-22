@@ -8,18 +8,15 @@ env:
     PROJECT_IDENTIFIER: 'hmpps-spg-testing-httpclient'
 phases:
   install:
+    runtime-versions:
+      docker: 18
+      java: openjdk8
     commands:
       - ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime
       - echo ${TZ} > /etc/timezone
-      - apt-get update
-      - apt-get install jq -y
-      - apt-get install awscli -y
-  pre_build:
-    commands:
-      - gradle build --dry-run --configure-on-demand --daemon
   build:
     commands:
-      - gradle clean build
+      - ./gradlew clean build
   post_build:
     commands:
       - ${CODEBUILD_SRC_DIR}/scripts/archive-application-test-artifacts.sh
