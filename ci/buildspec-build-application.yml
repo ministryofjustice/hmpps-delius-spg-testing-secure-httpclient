@@ -9,7 +9,7 @@ phases:
   install:
     runtime-versions:
       docker: 18
-      java: openjdk8
+      java: corretto8
   build:
     commands:
       - make build

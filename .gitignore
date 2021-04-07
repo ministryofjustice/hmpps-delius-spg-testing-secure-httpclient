@@ -24,3 +24,15 @@ history/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+**/ci_env_configs
+
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+*.plan
+*.out
+**/backend.tf
